@@ -13,7 +13,7 @@ char databuf[128];
 int server(int sock) {
 	int connfd = accept(sock, NULL, NULL);
 	if(connfd < 0) {
-		perror("accpet");
+		perror("accept");
 		close(sock);
 		return 1;
 	}
