@@ -14,7 +14,7 @@ static int fdmsg_addr_init(const char *path, struct sockaddr_un *addr) {
 }
 
 int fdmsg_socket(void) {
-	return socket(AF_UNIX, SOCK_SEQPACKET, 0);
+	return socket(AF_UNIX, SOCK_STREAM, 0);
 }
 
 static int fdmsg_dosock(
