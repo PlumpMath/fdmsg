@@ -73,6 +73,7 @@ int client(int sock) {
 int main(int argc, char **argv) {
 	if(argc < 2) {
 		fprintf(stderr, "Usage : ./main [ srv | clnt ]\n");
+		return 1;
 	}
 	int sock = fdmsg_socket();
 	if(sock < 0) {
