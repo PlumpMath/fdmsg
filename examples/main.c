@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "fdmsg.h"
+#include <fdmsg.h>
 
 #define SOCKET_PATH "/tmp/test-fdmsg-socket"
 

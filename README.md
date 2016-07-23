@@ -18,7 +18,7 @@ can only do stream-oriented connections, for example.
 /* client.c */
 #include <stdio.h>
 #include <string.h>
-#include "fdmsg.h"
+#include <fdmsg.h>
 
 int main(void) {
     /* create an FD buffer big enough for one fd, and put our
@@ -56,7 +56,7 @@ int main(void) {
 /* server.c */
 #include <stdio.h>
 #include <unistd.h>
-#include "fdmsg.h"
+#include <fdmsg.h>
 
 int main(void) {
     char fdbuf[FDMSG_BUFSZ(1)];
