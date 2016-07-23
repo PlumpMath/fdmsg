@@ -23,6 +23,12 @@ libfdmsg.a: $(OBJECTS)
 libfdmsg.so: $(OBJECTS)
 	$(CC) -shared -o $@ $(OBJECTS)
 
+install-libs: install-static install-shared
+install-static: libfdmsg.a
+	install -Dm644 $< $(DESTDIR)$(LIBDIR)/$<
+install-shared: libfdmsg.so
+	install -Dm755 $< $(DESTDIR)$(LIBDIR)/$<
+
 
 $(OBJECTS): fdmsg.h
 
