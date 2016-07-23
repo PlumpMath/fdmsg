@@ -1,4 +1,4 @@
 *.o
 *.so
 *.a
-/main
+examples/main

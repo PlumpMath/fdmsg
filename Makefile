@@ -1,6 +1,6 @@
 
 
-CFLAGS += -Wall -Wextra -std=c99 -pedantic -fPIC
+CFLAGS += -Wall -Wextra -std=c99 -pedantic -fPIC -I .
 
 OBJECTS := \
 	connect.o \
@@ -8,12 +8,12 @@ OBJECTS := \
 
 
 
-all: libs main
+all: libs examples/main
 
 libs: libfdmsg.a libfdmsg.so
 
-main: main.o libfdmsg.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ main.o libfdmsg.a
+examples/main: examples/main.o libfdmsg.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ examples/main.o libfdmsg.a
 clean:
 	rm -f *.o *.so *.a main
 
