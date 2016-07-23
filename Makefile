@@ -11,30 +11,30 @@ OBJECTS := \
 	connect.o \
 	sendrecv.o
 
+examples := examples/main
 
 
-all: libs examples/main
 
+all: libs
 libs: libfdmsg.a libfdmsg.so
-
-examples/main: examples/main.o libfdmsg.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ examples/main.o libfdmsg.a
+examples: $(examples)
 clean:
-	rm -f *.o *.so *.a main
-
-libfdmsg.a: $(OBJECTS)
-	rm -f $@ ; ar crD $@ $(OBJECTS)
-
-libfdmsg.so: $(OBJECTS)
-	$(CC) -shared -o $@ $(OBJECTS)
-
+	rm -f *.o */*.o *.so *.a $(examples)
 install: install-static install-shared
 install-static: libfdmsg.a
 	install -Dm644 $< $(DESTDIR)$(LIBDIR)/$<
 install-shared: libfdmsg.so
 	install -Dm755 $< $(DESTDIR)$(LIBDIR)/$<
 
+examples/%: examples/%.o libfdmsg.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< libfdmsg.a
+
+libfdmsg.a: $(OBJECTS)
+	rm -f $@ ; ar crD $@ $(OBJECTS)
+libfdmsg.so: $(OBJECTS)
+	$(CC) -shared -o $@ $(OBJECTS)
+
 
 $(OBJECTS): fdmsg.h
 
-.PHONY: all libs clean install install-static install-shared
+.PHONY: all libs clean install install-static install-shared examples
