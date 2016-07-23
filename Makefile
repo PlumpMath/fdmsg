@@ -11,8 +11,10 @@ OBJECTS := \
 	connect.o \
 	sendrecv.o
 
-examples := examples/main
-
+examples := \
+	examples/main \
+	examples/client \
+	examples/server
 
 
 all: libs
@@ -20,6 +22,7 @@ libs: libfdmsg.a libfdmsg.so
 examples: $(examples)
 clean:
 	rm -f *.o */*.o *.so *.a $(examples)
+	rm -f examples/client.c examples/server.c # Generated from README.md
 install: install-static install-shared
 install-static: libfdmsg.a
 	install -Dm644 $< $(DESTDIR)$(LIBDIR)/$<
@@ -33,6 +36,9 @@ libfdmsg.a: $(OBJECTS)
 	rm -f $@ ; ar crD $@ $(OBJECTS)
 libfdmsg.so: $(OBJECTS)
 	$(CC) -shared -o $@ $(OBJECTS)
+
+examples/client.c examples/server.c: README.md
+	./examples/extract_readme.sh
 
 
 $(OBJECTS): fdmsg.h

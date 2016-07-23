@@ -14,11 +14,10 @@ can only do stream-oriented connections, for example.
 
 ## Examples
 
-TODO: verify that these actually work:
-
 ```c
 /* client.c */
 #include <stdio.h>
+#include <string.h>
 #include "fdmsg.h"
 
 int main(void) {
@@ -27,51 +26,75 @@ int main(void) {
      * an implementation detail; see the comments in the header
      * file for a full explanation: */
     char fdbuf[FDMSG_BUFSZ(1)];
-    int *fds = FDMSG_DATA(&fdbuf[0]);
+    int *fds = FDMSG_BUFDATA(&fdbuf[0]);
     char *data = "Have fun with my stdout!";
+    int sock;
     fds[0] = 1;
 
     /* create the socket and connect: */
-    int fd = fdmsg_socket();
-    if(fd < 0) {
+    sock = fdmsg_socket();
+    if(sock < 0) {
         perror("fdmsg_socket()");
         return 1;
     }
-    if(fdmsg_connect(fd, "/path/to/socket") < 0) {
+    if(fdmsg_connect(sock, "/tmp/my-socket") < 0) {
         perror("fdmsg_connect()");
         return 1;
     }
 
     /* send some bytes and the file descriptor(s): */
-    fdmsg_send(fd, data, strlen(data), fdbuf, 1);
+    fdmsg_send(sock, data, strlen(data), fdbuf, 1);
 
+
+    /* We don't even have to wait for the server; it's got a direct
+     * connection to our stdout now. */
     return 0;
 }
 ```
 
 ```c
 /* server.c */
+#include <stdio.h>
+#include <unistd.h>
+#include "fdmsg.h"
+
+int main(void) {
     char fdbuf[FDMSG_BUFSZ(1)];
     char data[4096];
+    int sock;
+    int connfd;
+    ssize_t data_count;
 
     /* create the socket and bind: */
-    int fd = fdmsg_socket();
-    if(fd < 0) {
+    sock = fdmsg_socket();
+    if(sock < 0) {
         perror("fdmsg_socket()");
         return 1;
     }
-    if(fdmsg_bind(fd, "/path/to/socket") < 0) {
+    if(fdmsg_bind(sock, "/tmp/my-socket") < 0) {
         perror("fdmsg_bind()");
         return 1;
     }
 
+    /* This is standard socket API stuff; listen and accept: */
+    if(listen(sock, SOMAXCONN) < 0) {
+        perror("listen()");
+        return 1;
+    }
+    connfd = accept(sock, NULL, NULL);
+    if(connfd < 0) {
+        perror("accept()");
+        return 1;
+    }
+
     /* recieve some bytes and file descriptors(s): */
-    ssize_t data_count = fdmsg_recv(fd, data, sizeof data, fdbuf, 1);
+    data_count = fdmsg_recv(connfd, data, sizeof data, fdbuf, 1);
 
     /* send the data down the recieved file descriptor: */
-    write(FDMSG_DATA(fdbuf)[0], data, data_count);
+    write(FDMSG_BUFDATA(fdbuf)[0], data, data_count);
 
     return 0;
+}
 ```
 
 # License
