@@ -5,7 +5,7 @@ EXEC_PREFIX ?= $(PREFIX)
 INCLUDEDIR ?= $(PREFIX)/include
 LIBDIR ?= $(EXEC_PREFIX)/lib
 
-CFLAGS += -Wall -Wextra -std=c99 -pedantic -fPIC -I .
+CFLAGS += -Wall -Wextra -std=c89 -pedantic -fPIC -I .
 
 OBJECTS := \
 	connect.o \

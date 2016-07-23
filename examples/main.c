@@ -11,23 +11,28 @@
 char databuf[128];
 
 int server(int sock) {
-	int connfd = accept(sock, NULL, NULL);
+	void *fdbuf;
+	int connfd;
+	char data;
+	int *fds;
+
+	connfd = accept(sock, NULL, NULL);
 	if(connfd < 0) {
 		perror("accept");
 		close(sock);
 		return 1;
 	}
-	void *fdbuf = calloc(1, FDMSG_BUFSZ(3));
+	fdbuf = calloc(1, FDMSG_BUFSZ(3));
 	if(!fdbuf) {
 		perror("calloc");
 		return 1;
 	}
-	char data = 0;
+	data = 0;
 	if(fdmsg_recv(connfd, &data, 1, fdbuf, 3) < 0) {
 		perror("fdmsg_recv");
 		return 1;
 	}
-	int *fds = FDMSG_BUFDATA(fdbuf);
+	fds = FDMSG_BUFDATA(fdbuf);
 	while(1) {
 		ssize_t len = read(fds[0], &databuf, sizeof databuf);
 		if(len < 0) {
@@ -49,13 +54,17 @@ int server(int sock) {
 }
 
 int client(int sock) {
-	void *fdbuf = calloc(1, FDMSG_BUFSZ(3));
+	void *fdbuf;
+	char data;
+	int *fds;
+
+	fdbuf = calloc(1, FDMSG_BUFSZ(3));
 	if(!fdbuf) {
 		perror("calloc");
 		return 1;
 	}
-	char data = 0;
-	int *fds = FDMSG_BUFDATA(fdbuf);
+	data = 0;
+	fds = FDMSG_BUFDATA(fdbuf);
 	fds[0] = 0;
 	fds[1] = 1;
 	fds[2] = 2;
@@ -71,11 +80,13 @@ int client(int sock) {
 
 
 int main(int argc, char **argv) {
+	int sock;
+
 	if(argc < 2) {
 		fprintf(stderr, "Usage : ./main [ srv | clnt ]\n");
 		return 1;
 	}
-	int sock = fdmsg_socket();
+	sock = fdmsg_socket();
 	if(sock < 0) {
 		perror("make socket");
 		return 1;
