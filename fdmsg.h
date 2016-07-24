@@ -10,6 +10,19 @@ extern "C" {
  * Convience wrappers for transmitting file descriptors on stream-oriented
  * Unix sockets. See README.md in the source distribution for some examples
  * of basic usage.
+ *
+ * The following quirks of the underlying socket API bleed through:
+ *
+ * - You can't *just* send file descriptors; you must always send at least
+ *   one byte of data.
+ * - The buffer of file descriptors requires a header with some extra
+ *   information in it, so you can't just pass an `int *` to
+ *   `fdmsg_{send,recv}`. The `FDMSG_*` macros help with constructing so
+ *   called fdbufs, which are the header + array of file descriptors.
+ *
+ *   You don't need to do any special initialization of the fdbuf; just
+ *   use `FDMSG_BUFDATA` to access the array. `fdmsg_{send,recv}` will take
+ *   care of the header themselves.
  */
 
 
@@ -28,16 +41,29 @@ extern "C" {
 	((int *)CMSG_DATA((struct cmsghdr *)buf))
 
 /**
- * Send data and file descriptors on a socket.
+ * Send and recieve data and file descriptors on a socket.
  *
  * # Parameters
  *
- * - sock: An open stream-oriented unix socket
+ * - sock: An open stream-oriented unix socket on which to send
+ * - data: A buffer of bytes to write to the socket (for send) or
+ *         store data read from the socket (for recv).
+ * - data_len: The amount of data to read/write. must fit within
+ *             `data`. Additionally, `data_len` must always be at
+ *             least 1; Sending only file descriptors is not supported.
+ * - fdbuf: An fdbuf which is used like `data`, but for file
+ *          descriptors.
+ * - fd_count: The number of file descriptors to read or write. Must
+ *             fit within `fdbuf`.
+ *
+ * # Return value
+ *
+ * - On success, returns the number of bytes sent.
+ * - On failure, returns -1 and sets errno.
  */
 ssize_t fdmsg_send(int sock,
 	void *data, size_t data_len,
 	void *fdbuf, size_t fd_count);
-
 ssize_t fdmsg_recv(int sock,
 	void *data, size_t data_len,
 	void *fdbuf, size_t fd_count);

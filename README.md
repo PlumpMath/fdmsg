@@ -140,3 +140,13 @@ useful for distro packagers:
 # License
 
 ISC (simple permissive); see COPYING.
+
+# TODOS
+
+There are still a few things that need to be done before calling this
+"ready":
+
+* Tests. I've done some light manual testing, and run the examples, but
+  we should have a proper/thorough test suite.
+* We need to report the number of file descriptors read/written. Right
+  now we only report the number of bytes. This is a huge API flaw.
