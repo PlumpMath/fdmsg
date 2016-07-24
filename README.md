@@ -12,7 +12,7 @@ This library provides a wrapper around this feature that makes it
 simpler to work with. It doesn't provide the full range of options; you
 can only do stream-oriented connections, for example.
 
-## Examples
+# Examples
 
 ```c
 /* client.c */
@@ -96,6 +96,46 @@ int main(void) {
     return 0;
 }
 ```
+
+# Building & Installing
+
+
+## Building the library
+
+    make
+
+## Building the examples
+
+    make examples
+
+# Installing
+
+To install the shared and static libraries:
+
+    make install
+
+For just the shared, or just the static, you can do:
+
+    make install-shared
+
+or
+
+    make install-static
+
+respectively.
+
+The library is installed into `/usr/local` by default. To install it
+somewhere else use the `PREFIX` variable. E.g. to install into `/usr`:
+
+    make PREFIX=/usr install
+
+Note: providing `PREFIX` during the build step will have no effect; it
+must be supplied during `make install`.
+
+The makefile also supports `DESTDIR` with the usual meaning, which is
+useful for distro packagers:
+
+    make DESTDIR=${tmp_root_dir} PREFIX=/usr install
 
 # License
 
