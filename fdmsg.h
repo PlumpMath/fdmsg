@@ -1,5 +1,8 @@
 #ifndef PASSFD_H
 #define PASSFD_H
+
+#include <sys/socket.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -9,7 +12,6 @@ extern "C" {
  * of basic usage.
  */
 
-#include <sys/socket.h>
 
 /**
  * `FDMSG_BUFSZ(n)` is the size in bytes of an fdbuf with capacity for `n`
