@@ -108,7 +108,7 @@ int main(void) {
 
     make examples
 
-# Installing
+## Installing
 
 To install the shared and static libraries:
 
